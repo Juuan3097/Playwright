@@ -28,9 +28,7 @@ export class Register {
   }
 
   async goTo() {
-    await this.page.goto(
-      "https://ecommerce-playground.lambdatest.io/index.php?route=common/home"
-    );
+    await this.page.goto(process.env.URL!);
   }
 
   async registerUser() {
@@ -46,5 +44,3 @@ export class Register {
     await this.confirmRegistration.click();
   }
 }
-
-//firstName: any, lastName: any,l email: any, phone: any, password: any
