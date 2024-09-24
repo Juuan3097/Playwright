@@ -19,7 +19,7 @@ export class LoginPage {
 
   async loginStorage() {
     if (await this.loginBtn.isVisible()) {
-      await this.email.fill(process.env.EMAIL!);
+      await this.email.fill(process.env.EMAIL2!);
       await this.password.fill(process.env.PASSWORD!);
       await this.loginBtn.click();
 

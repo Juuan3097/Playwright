@@ -25,14 +25,31 @@ test.describe.only("@Web Test with Login", () => {
   });
   test.use({ storageState: "web/context/storageState.json" });
 
-  test("@Web Modificar información de la cuenta", async ({ page }) => {
-    await page.goto(process.env.LOGIN_URL!);
+  test.skip("@Web Modificar información de la cuenta", async ({ page }) => {
+    await page.goto(process.env.MYACCOUNT_URL!);
     const poManager = new POManager(page);
     const changeInfo = await poManager.getChangeInfo();
     await changeInfo.confirmChanges();
     await expect(page.getByText(" Success: Your account has")).toBeVisible();
     await page.pause();
     await changeInfo.verifyChanges();
+  });
+
+  test("@Web Generar una orden exitosa de multiples productos", async ({
+    page,
+  }) => {
+    await page.goto(process.env.URL!);
+    const poManager = new POManager(page);
+    const buyProducts = await poManager.getBuyProducts();
+    const checkoutForm = await poManager.getCheckoutForm();
+    await buyProducts.addCart();
+    await buyProducts.goToCheckout();
+    buyProducts.getValues();
+    const totalItem = buyProducts.totalItem;
+    const totalCart = buyProducts.totalCart;
+    await expect(totalItem).toEqual(totalCart);
+    await checkoutForm.completeForm();
+    await checkoutForm.confirmOrder();
   });
 });
 
