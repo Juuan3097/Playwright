@@ -52,7 +52,7 @@ test.describe.only("@Web Test with Login", () => {
     await checkoutForm.confirmOrder();
   });
 
-  test.only("@Web Agregar multiples productos a Wish list y eliminar los que no tengan stock", async ({
+  test.skip("@Web Agregar multiples productos a Wish list y eliminar los que no tengan stock", async ({
     page,
   }) => {
     await page.goto(process.env.URL!);
@@ -62,6 +62,24 @@ test.describe.only("@Web Test with Login", () => {
     await wishList.goToWishList();
     await wishList.removeItem();
     await wishList.verifyProducts();
+  });
+
+  test.skip("@Web Dejar unaReview para un producto", async ({ page }) => {
+    await page.goto(process.env.URL!);
+    const poManager = new POManager(page);
+    const review = await poManager.getReview();
+    await review.goToProduct();
+    await review.writeAndSubmitReview();
+    await page.pause();
+  });
+
+  test.only("@Web Con una sesión iniciada, clickear el botón Logout", async ({
+    page,
+  }) => {
+    await page.goto(process.env.URL!);
+    const poManager = new POManager(page);
+    const logOut = await poManager.getLogOut();
+    await logOut.LogOut();
   });
 });
 
