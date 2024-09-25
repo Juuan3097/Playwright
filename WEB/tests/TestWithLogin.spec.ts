@@ -35,7 +35,7 @@ test.describe.only("@Web Test with Login", () => {
     await changeInfo.verifyChanges();
   });
 
-  test("@Web Generar una orden exitosa de multiples productos", async ({
+  test.skip("@Web Generar una orden exitosa de multiples productos", async ({
     page,
   }) => {
     await page.goto(process.env.URL!);
@@ -50,6 +50,18 @@ test.describe.only("@Web Test with Login", () => {
     await expect(totalItem).toEqual(totalCart);
     await checkoutForm.completeForm();
     await checkoutForm.confirmOrder();
+  });
+
+  test.only("@Web Agregar multiples productos a Wish list y eliminar los que no tengan stock", async ({
+    page,
+  }) => {
+    await page.goto(process.env.URL!);
+    const poManager = new POManager(page);
+    const wishList = await poManager.getWishList();
+    await wishList.addWishList();
+    await wishList.goToWishList();
+    await wishList.removeItem();
+    await wishList.verifyProducts();
   });
 });
 

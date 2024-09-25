@@ -80,11 +80,6 @@ export class BuyProducts {
     }
   }
 
-  // async closeAlerts() {
-  //   for (let i = 0; i < 2; i++) {
-  //     await this.closeAlertBtn.nth(i).click();
-  //   }
-  // }
 
   async goToCheckout() {
     await this.page.on("dialog", (dialog) => dialog.dismiss());
