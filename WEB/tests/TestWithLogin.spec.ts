@@ -41,7 +41,7 @@ test.describe.only("@Web Test with Login", () => {
     await page.goto(process.env.URL!);
     const poManager = new POManager(page);
     const buyProducts = await poManager.getBuyProducts();
-    const checkoutForm = await poManager.getCheckoutForm();
+    const checkoutForm = await poManager.getCheckout();
     await buyProducts.addCart();
     await buyProducts.goToCheckout();
     buyProducts.getValues();
@@ -70,16 +70,33 @@ test.describe.only("@Web Test with Login", () => {
     const review = await poManager.getReview();
     await review.goToProduct();
     await review.writeAndSubmitReview();
-    await page.pause();
   });
 
-  test.only("@Web Con una sesión iniciada, clickear el botón Logout", async ({
+  test("@Web Con una sesión iniciada, clickear el botón Logout", async ({
     page,
   }) => {
     await page.goto(process.env.URL!);
     const poManager = new POManager(page);
     const logOut = await poManager.getLogOut();
     await logOut.LogOut();
+  });
+
+  test.only("@web Iniciar unacompra desde Wish list e ir directamente al CheckOut", async ({
+    page,
+  }) => {
+    await page.goto(process.env.URL!);
+    const poManager = new POManager(page);
+    const wishList = await poManager.getWishList();
+    const checkout = await poManager.getCheckout();
+    await wishList.goToCart();
+    await checkout.cleanCart();
+    await wishList.addWishList();
+    await wishList.goToWishList();
+    await wishList.removeItem();
+    await wishList.addToCart();
+    await wishList.goToCart();
+    await checkout.completeForm();
+    await checkout.confirmOrder();
   });
 });
 

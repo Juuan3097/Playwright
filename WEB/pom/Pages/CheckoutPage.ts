@@ -14,6 +14,9 @@ export class Checkout {
   confirmOrderBtn: Locator;
   successfulCheckout: Locator;
   newAddress: Locator;
+  checkoutCart: Locator;
+  table: Locator;
+  row: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -37,6 +40,36 @@ export class Checkout {
     this.newAddress = page
       .locator("#payment-address")
       .getByText("I want to use a new address");
+    this.checkoutCart = page.locator("#checkout-cart");
+    this.table = this.checkoutCart.locator("table.table").locator("tbody");
+    this.row = this.table.locator("tr");
+  }
+
+  async cleanCart() {
+    if ((await this.table.count()) === 1) {
+      const rowCount = await this.row;
+      console.log("La cantidad de rows son: " + (await rowCount.count()));
+      await rowCount.last().waitFor({ state: "visible" });
+      for (let i = await rowCount.count(); i > 0; i--) {
+        await this.page.pause();
+        console.log("El numero de iteracion es: " + (i - 1));
+        const column = await rowCount.nth(i - 1).locator("td");
+        const removeBtn = await column
+          .nth(2)
+          .locator("div.input-group")
+          .locator("div.input-group-append")
+          .locator("button")
+          .nth(1)
+          .first();
+        const btnCount = await removeBtn.count();
+        console.log("Los botones encontrados son: " + btnCount);
+        //await removeBtn.waitFor({ state: "visible" });
+        await removeBtn.click();
+        console.log("El producto ha sido removido");
+      }
+    } else {
+      return;
+    }
   }
 
   async completeForm() {

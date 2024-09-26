@@ -47,7 +47,7 @@ export class POManager {
     return this.buyProducts;
   }
 
-  getCheckoutForm() {
+  getCheckout() {
     return this.checkout;
   }
 

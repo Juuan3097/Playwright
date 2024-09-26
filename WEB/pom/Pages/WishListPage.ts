@@ -14,12 +14,17 @@ export class WishList {
   table: Locator;
   row: Locator;
   removeMsg: Locator;
+  cartBtn: Locator;
+  checkOutBtn: Locator;
+  newAddressCheck: Locator;
+  wishedBtn: Locator;
 
   constructor(page: Page) {
     this.page = page;
     this.products = page.locator("div.row >> div.product-layout");
     //    this.addToWishList = page.locator("button.btn-wishlist").locator("i");
     this.addToWishList = page.getByRole("button", { name: "" });
+    this.wishedBtn = page.locator("button.wished");
     this.productAction = page.locator(".product-action");
     this.categoryMenu = page.getByRole("button", { name: "Shop by Category" });
     this.category = page.getByRole("link", { name: "Desktops and Monitors" });
@@ -34,12 +39,17 @@ export class WishList {
       .locator(".table-responsive")
       .locator("table.table")
       .locator("tbody");
-    this.row = page
-      .locator(".table-responsive")
-      .locator("table.table")
-      .locator("tbody")
-      .locator("tr");
+    this.row = this.table.locator("tr");
     this.removeMsg = page.getByText("Success: You have modified");
+    this.cartBtn = page
+      .locator(".cart-icon")
+      .locator("div")
+      .locator("svg")
+      .first();
+    this.checkOutBtn = page.getByRole("button", { name: " Checkout" });
+    this.newAddressCheck = page
+      .locator("#payment-address")
+      .getByText("I want to use a new address");
   }
 
   async searchProduct(productName: string, i: number) {
@@ -54,7 +64,9 @@ export class WishList {
       await this.addToWishList.waitFor({ state: "visible" });
       const btnCount = await this.addToWishList.count();
       console.log("La cantidad de btn son: " + btnCount);
-      await this.addToWishList.click();
+      if ((await this.wishedBtn.count()) === 0) {
+        await this.addToWishList.click();
+      }
       await this.page.waitForLoadState("networkidle");
       await this.backToCategory.waitFor({ state: "visible" });
       await this.backToCategory.click();
@@ -83,13 +95,13 @@ export class WishList {
   }
 
   async removeItem() {
-    const rowCount = await this.row;
-    console.log("La cantidad de rows son: " + (await rowCount.count()));
-    await rowCount.last().waitFor({ state: "visible" });
-
-    for (let i = await rowCount.count(); i > 0; i--) {
+    await this.page.waitForLoadState("networkidle");
+    const rowCountFirst = await this.row;
+    console.log("La cantidad de rows son: " + (await rowCountFirst.count()));
+    await rowCountFirst.last().waitFor({ state: "visible" });
+    for (let i = await rowCountFirst.count(); i > 0; i--) {
       console.log("El numero de iteracion es: " + (i - 1));
-      const column = await rowCount.nth(i - 1).locator("td");
+      const column = await rowCountFirst.nth(i - 1).locator("td");
       const stock = await column.nth(3).textContent();
       const productTitle = await column.nth(1).textContent();
       const removeBtn = await column.nth(5).locator("a");
@@ -100,22 +112,54 @@ export class WishList {
         console.log("El producto " + productTitle + " ha sido removido");
       }
     }
+
+    await this.verifyProducts();
   }
 
   async verifyProducts() {
-    const rowCount = await this.row;
-    await rowCount.last().waitFor({ state: "visible" });
-
-    for (let i = 0; i < (await rowCount.count()); i++) {
-      const column = await rowCount.nth(i).locator("td");
+    const rowCountSecond = await this.row;
+    await rowCountSecond.last().waitFor({ state: "visible" });
+    const rowCountVerifyProducts = await rowCountSecond.count();
+    console.log(
+      "Cantidad de rows en el metodo verifyProducts: " +
+        (await rowCountVerifyProducts)
+    );
+    for (let i = 0; i < (await rowCountSecond.count()); i++) {
+      const column = await rowCountSecond.nth(i).locator("td");
       const stock = await column.nth(3).textContent();
       const productTitle = await column.nth(1).textContent();
-      if (this.table) {
+      if (await this.table) {
         expect((await stock) === productTitle!).toBeFalsy();
         console.log("No se encontraron productos out of stock");
       } else {
         console.log("No hay productos agregados a whishList");
       }
     }
+  }
+
+  async addToCart() {
+    await this.table.waitFor({ state: "visible" });
+    const rowCountThird = await this.row;
+    console.log("La cantidad de rows son: " + (await rowCountThird.count()));
+    await rowCountThird.last().waitFor({ state: "visible" });
+
+    for (let i = 0; i < (await rowCountThird.count()); i++) {
+      console.log("El numero de iteracion es: " + i);
+      const column = await rowCountThird.nth(i).locator("td");
+      if (this.table) {
+        const addToCartBtn = await column.nth(5).locator("button").first();
+        const addToCartBtnCount = await addToCartBtn.count();
+        console.log(
+          "La cant de locators encontrados son: " + addToCartBtnCount
+        );
+        await addToCartBtn.click();
+      }
+    }
+  }
+
+  async goToCart() {
+    await this.cartBtn.waitFor({ state: "visible" });
+    await this.cartBtn.click();
+    await this.checkOutBtn.click();
   }
 }

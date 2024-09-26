@@ -88,6 +88,7 @@ export class BuyProducts {
     await this.flatRate.waitFor({ state: "visible" });
   }
 
+
   async getValues() {
     this.totalSum = 0; //Reiniciamos el valor para evitar acumulaciones previas
     const rowCount = await this.row;
