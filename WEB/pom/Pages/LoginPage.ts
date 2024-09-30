@@ -7,6 +7,7 @@ export class LoginPage {
   myAccountMenu: Locator;
   loginLink: Locator;
   loginBtn: Locator;
+  failLogin: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -15,6 +16,7 @@ export class LoginPage {
     this.password = page.getByPlaceholder("Password");
     this.myAccountMenu = page.getByRole("button", { name: " My account" });
     this.loginBtn = page.getByRole("button", { name: "Login" });
+    this.failLogin = page.getByText("Warning: No match for E-Mail");
   }
 
   async loginStorage() {
@@ -27,6 +29,13 @@ export class LoginPage {
         .context()
         .storageState({ path: "web/context/storageState.json" });
     }
+  }
+
+  async invalidLogin() {
+    await this.email.fill(process.env.EMAIL!);
+    await this.password.fill(process.env.PASSWORD!);
+    await this.loginBtn.click();
+    expect(await this.failLogin).toBeVisible();
   }
 
   async navigateToLogin() {

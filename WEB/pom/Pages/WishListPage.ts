@@ -22,7 +22,7 @@ export class WishList {
   constructor(page: Page) {
     this.page = page;
     this.products = page.locator("div.row >> div.product-layout");
-    //    this.addToWishList = page.locator("button.btn-wishlist").locator("i");
+    //   this.addToWishList = page.locator("button.btn-wishlist");
     this.addToWishList = page.getByRole("button", { name: "" });
     this.wishedBtn = page.locator("button.wished");
     this.productAction = page.locator(".product-action");
@@ -62,9 +62,10 @@ export class WishList {
       await this.products.nth(i).hover();
       await this.products.nth(i).click();
       await this.addToWishList.waitFor({ state: "visible" });
-      const btnCount = await this.addToWishList.count();
-      console.log("La cantidad de btn son: " + btnCount);
-      if ((await this.wishedBtn.count()) === 0) {
+      const checkAddToWishlist = await this.addToWishList.getAttribute("class");
+      console.log("La clase es: " + checkAddToWishlist);
+
+      if (!(checkAddToWishlist?.includes("wished"))) {
         await this.addToWishList.click();
       }
       await this.page.waitForLoadState("networkidle");

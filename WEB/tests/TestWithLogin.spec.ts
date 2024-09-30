@@ -4,7 +4,7 @@
 import { test, expect, chromium, Page } from "@playwright/test";
 import { POManager } from "../pom/Pages/POManager";
 
-test.describe.only("@Web Test with Login", () => {
+test.describe.skip("@Web Test with Login", () => {
   test.beforeAll(async ({}) => {
     // Step 1: Launch browser and create context
     const browser = await chromium.launch({ headless: false });
@@ -81,7 +81,7 @@ test.describe.only("@Web Test with Login", () => {
     await logOut.LogOut();
   });
 
-  test.only("@web Iniciar unacompra desde Wish list e ir directamente al CheckOut", async ({
+  test.skip("@web Iniciar unacompra desde Wish list e ir directamente al CheckOut", async ({
     page,
   }) => {
     await page.goto(process.env.URL!);
@@ -100,12 +100,12 @@ test.describe.only("@Web Test with Login", () => {
   });
 });
 
-test.describe.skip("@Web Test without Login", () => {
-  test.skip("@Web Inicio de sesión invalido", async ({ page }) => {
+test.describe("@Web Test without Login", () => {
+  test.only("@Web Inicio de sesión invalido", async ({ page }) => {
     const poManager = new POManager(page);
     const login = await poManager.getLoginPage();
-    //CREAR
     await login.navigateToLogin();
+    await login.invalidLogin();
   });
 
   test.skip("@Web Registro valido de nuevo usuario", async ({ page }) => {

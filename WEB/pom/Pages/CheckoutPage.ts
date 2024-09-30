@@ -46,7 +46,7 @@ export class Checkout {
   }
 
   async cleanCart() {
-    if ((await this.table.count()) === 1) {
+    if (await this.table) {
       const rowCount = await this.row;
       console.log("La cantidad de rows son: " + (await rowCount.count()));
       await rowCount.last().waitFor({ state: "visible" });
